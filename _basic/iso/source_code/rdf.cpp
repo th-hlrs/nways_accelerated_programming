@@ -151,7 +151,7 @@ void pair_gpu(double const *d_x, double const *d_y, double const *d_z,
 	double del = box / (2.0 * d_bin);
 	double cut = box * 0.5;
 
-	auto const res = std::views::iota(0, numatm*numatm);
+	auto const res = std::views::iota(0u, unsigned(numatm*numatm));
 
 	std::cout << "\n" << nconf << " "<< numatm; 
 	for (int frame = 0; frame < nconf; frame++)
