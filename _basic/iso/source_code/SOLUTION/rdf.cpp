@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
 	inconf = 10;
 	nbin = 2000;
-	file = "../../../_common/input/alk.traj.dcd";
+	file = "../../_common/input/alk.traj.dcd";
 	///////////////////////////////////////
 	std::ifstream infile{};
 	infile.open(file.c_str());
@@ -78,9 +78,9 @@ int main(int argc, char *argv[])
 		dcdreadframe(ax, ay, az, infile, numatm, xbox, ybox, zbox);
 		for (int j = 0; j < numatm; j++)
 		{
-			x[i * numatm + j] = ax[j];
-			y[i * numatm + j] = ay[j];
-			z[i * numatm + j] = az[j];
+			h_x[i * numatm + j] = ax[j];
+			h_y[i * numatm + j] = ay[j];
+			h_z[i * numatm + j] = az[j];
 		}
 	}
 	nvtxRangePop(); //pop for Reading file
