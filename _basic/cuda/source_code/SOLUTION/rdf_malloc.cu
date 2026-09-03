@@ -7,10 +7,9 @@
 #include <cstdio>
 #include <iomanip>
 #include "dcdread.h"
-#include<assert.h>
+#include <assert.h>
 #include <nvtx3/nvToolsExt.h>
 
-using namespace std;
 //additional error handling code
 static void HandleError(cudaError_t err,
     const char *file, int line) {
@@ -29,14 +28,14 @@ __global__ void pair_gpu(const double* d_x, const double* d_y, const double* d_z
 
 int main(int argc , char* argv[])
 {
-    double xbox,ybox,zbox;
-    double* h_x,*h_y,*h_z;
-    double* d_x,*d_y,*d_z;
-    unsigned long long int *h_g2,*d_g2;
-    int nbin;
-    int device;
-    int numatm,nconf,inconf;
-    string file;
+    double xbox{},ybox{},zbox{};
+    double* h_x{},*h_y{},*h_z{};
+    double* d_x{},*d_y{},*d_z{};
+    unsigned long long int *h_g2{},*d_g2{};
+    int nbin{};
+    int device{};
+    int numatm{},nconf{},inconf{};
+    std::string file{};
 
     ///////////////////////////////////////////////////////////////
 
@@ -46,25 +45,25 @@ int main(int argc , char* argv[])
     device = 0;
     HANDLE_ERROR (cudaSetDevice(device));//pick the device to use
     ///////////////////////////////////////
-    std::ifstream infile;
+    std::ifstream infile{};
     infile.open(file.c_str());
     if(!infile){
-        cout<<"file "<<file.c_str()<<" not found\n";
+        std::cout<<"file "<<file.c_str()<<" not found\n";
         return 1;
     }
     assert(infile);
 
 
-    ofstream pairfile,stwo;
+    std::ofstream pairfile{},stwo{};
     pairfile.open("RDF.dat");
     stwo.open("Pair_entropy.dat");
 
     /////////////////////////////////////////////////////////
     dcdreadhead(&numatm,&nconf,infile);
-    cout<<"Dcd file has "<< numatm << " atoms and " << nconf << " frames"<<endl;
-    if (inconf>nconf) cout << "nconf is reset to "<< nconf <<endl;
+    std::cout<<"Dcd file has "<< numatm << " atoms and " << nconf << " frames"<<std::endl;
+    if (inconf>nconf) {std::cout << "nconf is reset to "<< nconf <<std::endl;}
     else {nconf = inconf;}
-    cout<<"Calculating RDF for " << nconf << " frames"<<endl;
+    std::cout<<"Calculating RDF for " << nconf << " frames" <<std::endl;
     ////////////////////////////////////////////////////////
 
     unsigned long long int sizef= nconf*numatm*sizeof(double);
@@ -106,7 +105,7 @@ int main(int argc , char* argv[])
     HANDLE_ERROR(cudaMemcpy(d_y, h_y, sizef, cudaMemcpyHostToDevice));
     HANDLE_ERROR(cudaMemcpy(d_z, h_z, sizef, cudaMemcpyHostToDevice));
 
-    cout<<"Reading of input file and transfer to gpu is completed"<<endl;
+    std::cout<<"Reading of input file and transfer to gpu is completed"<<std::endl;
     //////////////////////////////////////////////////////////////////////////
     dim3 nthreads(128, 1, 1);
     dim3 nblock;
@@ -123,64 +122,55 @@ int main(int argc , char* argv[])
 
     nvtxRangePop(); //Pop for Pair Calculation
 
-    double pi=acos(-1.0l);
+    double pi=acos(-1.0);
     double rho=(numatm)/(xbox*ybox*zbox);
-    double norm=(4.0l*pi*rho)/3.0l;
-    double rl,ru,nideal;
-    double g2[nbin];
-    double r,gr,lngr,lngrbond,s2=0.0l,s2bond=0.0l;
-    double box=min(xbox,ybox);
-    box=min(box,zbox);
-    double del=box/(2.0l*nbin);
+    double norm=(4.0*pi*rho)/3.0;
+    double g2[nbin]{};
+    double s2=0.0,s2bond=0.0;
+    double box=std::min(xbox,ybox);
+    box=std::min(box,zbox);
+    double del=box/(2.0*nbin);
     nvtxRangePush("Entropy_Calculation");
     for (int i=0;i<nbin;i++) {
-        rl=(i)*del;
-        ru=rl+del;
-        nideal=norm*(ru*ru*ru-rl*rl*rl);
+        double rl=(i)*del;
+        double ru=rl+del;
+        double nideal=norm*(ru*ru*ru-rl*rl*rl);
         g2[i]=(double)h_g2[i]/((double)nconf*(double)numatm*nideal);
-        r=(i)*del;
-        pairfile<<(i+0.5l)*del<<" "<<g2[i]<<endl;
-        if (r<2.0l) {
-            gr=0.0l;
-        }
-        else {
+        double r=(i)*del;
+	double gr{}, lngr{}, lngrbond{};
+        pairfile<<(i+0.5)*del<<" "<<g2[i]<<std::endl;
+        if (r>=2.0) {
             gr=g2[i];
         }
-        if (gr<1e-5) {
-            lngr=0.0l;
-        }
-        else {
+        if (gr>=1e-5) {
             lngr=log(gr);
         }
 
-        if (g2[i]<1e-6) {
-            lngrbond=0.0l;
-        }
-        else {
+        if (g2[i]>=1e-6) {
             lngrbond=log(g2[i]);
         }
-        s2=s2-2.0l*pi*rho*((gr*lngr)-gr+1.0l)*del*r*r;
-        s2bond=s2bond-2.0l*pi*rho*((g2[i]*lngrbond)-g2[i]+1.0l)*del*r*r;
+        s2=s2-2.0*pi*rho*((gr*lngr)-gr+1.0)*del*r*r;
+        s2bond=s2bond-2.0*pi*rho*((g2[i]*lngrbond)-g2[i]+1.0)*del*r*r;
 
     }
     nvtxRangePop(); //Pop for Entropy Calculation
-    stwo<<"s2 value is "<<s2<<endl;
-    stwo<<"s2bond value is "<<s2bond<<endl;
+    stwo<<"s2 value is "<<s2<<std::endl;
+    stwo<<"s2bond value is "<<s2bond<<std::endl;
 
-    cout<<"\n\n\n#Freeing Device memory"<<endl;
+    std::cout<<"\n\n\n#Freeing Device memory"<<std::endl;
     HANDLE_ERROR(cudaFree(d_x));
     HANDLE_ERROR(cudaFree(d_y));
     HANDLE_ERROR(cudaFree(d_z));
     HANDLE_ERROR(cudaFree(d_g2));
  
-    cout<<"#Freeing Host memory"<<endl;
+    std::cout<<"#Freeing Host memory"<<std::endl;
     HANDLE_ERROR(cudaFreeHost(h_x));
     HANDLE_ERROR(cudaFreeHost(h_y));
     HANDLE_ERROR(cudaFreeHost(h_z));
     HANDLE_ERROR(cudaFreeHost(h_g2));
 
-    cout<<"#Number of atoms processed: "<<numatm<<endl<<endl;
-    cout<<"#Number of confs processed: "<<nconf<<endl<<endl;
+    std::cout<<"#Number of atoms processed: "<<numatm<<"\n"<<std::endl;
+    std::cout<<"#Number of confs processed: "<<nconf<<"\n"<<std::endl;
     return 0;
 }
 
@@ -188,33 +178,30 @@ __global__ void pair_gpu(const double* d_x, const double* d_y, const double* d_z
     unsigned long long int *d_g2, int numatm, int nconf, 
     double xbox, double ybox, double zbox, int d_bin)
 {
-    double r, cut, dx, dy, dz;
-    int ig2;
-    double box;
-    box = min(xbox, ybox);
+    double box = min(xbox, ybox);
     box = min(box, zbox);
 
     double del = box / (2.0 * d_bin);
-    cut = box * 0.5;
+    double cut = box * 0.5;
 
     int id1 = blockIdx.y * blockDim.y + threadIdx.y;
     int id2 = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (id1 >= numatm || id2 >= numatm) return;
-    if (id1 > id2) return;
+    if (id1 >= numatm || id2 >= numatm) {return;}
+    if (id1 > id2) {return;}
 
     for (int frame = 0; frame < nconf; ++frame) {
-        dx = d_x[frame * numatm + id1] - d_x[frame * numatm + id2];
-        dy = d_y[frame * numatm + id1] - d_y[frame * numatm + id2];
-        dz = d_z[frame * numatm + id1] - d_z[frame * numatm + id2];
+        double dx = d_x[frame * numatm + id1] - d_x[frame * numatm + id2];
+        double dy = d_y[frame * numatm + id1] - d_y[frame * numatm + id2];
+        double dz = d_z[frame * numatm + id1] - d_z[frame * numatm + id2];
 
         dx = dx - xbox * (round(dx / xbox));
         dy = dy - ybox * (round(dy / ybox));
         dz = dz - zbox * (round(dz / zbox));
 
-        r = sqrtf(dx * dx + dy * dy + dz * dz);
+        double r = sqrtf(dx * dx + dy * dy + dz * dz);
         if (r < cut) {
-            ig2 = (int)(r / del);
+            int ig2 = (int)(r / del);
             atomicAdd(&d_g2[ig2], 2);
         }
     }

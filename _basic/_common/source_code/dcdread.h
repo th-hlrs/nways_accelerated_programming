@@ -3,16 +3,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Copyright (c) 2021 NVIDIA Corporation.  All rights reserved.
-using namespace std;
 
 void dcdreadhead(int *natom, int *nframes, std::istream &infile)
 {
 
-    infile.seekg(8, ios::beg);
+    infile.seekg(8, std::ios::beg);
     infile.read((char *)nframes, sizeof(int));
-    infile.seekg(64 * 4, ios::cur);
+    infile.seekg(64 * 4, std::ios::cur);
     infile.read((char *)natom, sizeof(int));
-    infile.seekg(1 * 8, ios::cur);
+    infile.seekg(1 * 8, std::ios::cur);
     return;
 }
 
@@ -29,25 +28,25 @@ void dcdreadframe(double *x, double *y, double *z, std::istream &infile,
     ybox = d[2];
     zbox = d[5];
     float a, b, c;
-    infile.seekg(1 * 8, ios::cur);
+    infile.seekg(1 * 8, std::ios::cur);
     for (int i = 0; i < natom; i++)
     {
         infile.read((char *)&a, sizeof(float));
         x[i] = a;
     }
-    infile.seekg(1 * 8, ios::cur);
+    infile.seekg(1 * 8, std::ios::cur);
     for (int i = 0; i < natom; i++)
     {
         infile.read((char *)&b, sizeof(float));
         y[i] = b;
     }
-    infile.seekg(1 * 8, ios::cur);
+    infile.seekg(1 * 8, std::ios::cur);
     for (int i = 0; i < natom; i++)
     {
         infile.read((char *)&c, sizeof(float));
         z[i] = c;
     }
-    infile.seekg(1 * 8, ios::cur);
+    infile.seekg(1 * 8, std::ios::cur);
 
     return;
 }
