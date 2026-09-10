@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
 		 << std::endl;
 	return 0;
 }
+#pragma acc routine seq
 int round(float num)
 {
 	return num < 0 ? num - 0.5 : num + 0.5;
@@ -154,6 +155,7 @@ void pair_gpu(const double *d_x, const double *d_y, const double *d_z,
 	for (int frame = 0; frame < nconf; frame++)
 	{
 		printf("\n %d  ", frame);
+		// Todo: Add pragmas to parallize the two loops.
 		for (int id1 = 0; id1 < numatm; id1++)
 		{
 			for (int id2 = 0; id2 < numatm; id2++)

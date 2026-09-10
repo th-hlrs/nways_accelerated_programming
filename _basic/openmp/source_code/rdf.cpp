@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
 	nvtxRangePop(); //pop for REading file
 	std::cout << "Reading of input file is completed" << std::endl;
 	//////////////////////////////////////////////////////////////////////////
+	// Todo: add data mapping directives
 	nvtxRangePush("Pair_Calculation");
 	pair_gpu(h_x, h_y, h_z, h_g2, numatm, nconf, xbox, ybox, zbox, nbin);
 	nvtxRangePop(); //Pop for Pair Calculation
@@ -147,7 +148,7 @@ void pair_gpu(const double *d_x, const double *d_y, const double *d_z,
 		for (int frame = 0; frame < nconf; frame++)
 		{
 			printf("\n %d  ", frame);
-
+			// Todo: parallelize the two loops
 			for (int id1 = 0; id1 < numatm; id1++)
 			{
 				for (int id2 = 0; id2 < numatm; id2++)
@@ -164,7 +165,7 @@ void pair_gpu(const double *d_x, const double *d_y, const double *d_z,
 					if (r < cut)
 					{
 						int ig2 = (int)(r / del);
-
+						#pragma omp atomic
 						d_g2[ig2] = d_g2[ig2] + 1;
 					}
 				}

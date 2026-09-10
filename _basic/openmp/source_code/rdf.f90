@@ -91,9 +91,11 @@ program rdf
       cut = dble(xbox * 0.5);
 
       !pair calculation
+      ! Todo: add data mapping directives
       call nvtxStartRange("Pair Calculation")
       do iconf=1,nframes
          if (mod(iconf,1).eq.0) print*,iconf
+         ! Todo: parallelize the two loops
          do i=1,natoms
             do j=1,natoms
                dx=x(i,iconf)-x(j,iconf)
@@ -107,6 +109,7 @@ program rdf
                r=dsqrt(dx**2+dy**2+dz**2)
                if(r<cut)then
                   ind=int(r/del)+1
+                  !$omp atomic
                   g(ind)=g(ind)+1.0d0
                endif
             enddo

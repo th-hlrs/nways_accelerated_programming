@@ -94,6 +94,7 @@ program rdf
       call nvtxStartRange("Pair Calculation")
       do iconf=1,nframes
          if (mod(iconf,1).eq.0) print*,iconf
+         ! Todo: merge the two loops to one do concurrent loop.
          do i=1,natoms
             do j=1,natoms
                dx=x(i,iconf)-x(j,iconf)
@@ -107,6 +108,7 @@ program rdf
                r=dsqrt(dx**2+dy**2+dz**2)
                if(r<cut)then
                   ind=int(r/del)+1
+                  !$acc atomic
                   g(ind)=g(ind)+1.0d0
                endif
             enddo
