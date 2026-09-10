@@ -169,7 +169,7 @@ void pair_gpu(double const *d_x, double const *d_y, double const *d_z,
 						  dy = dy - ybox * (std::round(dy / ybox));
 						  dz = dz - zbox * (std::round(dz / zbox));
 
-						  double r = sqrt(dx * dx + dy * dy + dz * dz);
+						  double r = sqrtf(dx * dx + dy * dy + dz * dz);
 						  if (r < cut)
 						  {
 							  int ig2 = (int)(r / del);
