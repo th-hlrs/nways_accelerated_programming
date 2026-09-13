@@ -1,0 +1,16 @@
+#!/bin/bash
+ 
+#SBATCH --job-name    halfnode
+#SBATCH --clusters    vsc5
+#
+###SBATCH --reservation N-Ways-GPU-2026-09      # bc:  14 - 15 Sep 2026 15:00
+#SBATCH --reservation N-Ways-GPU-2026-09_prep   # prep: 5 - 13 Sep 2026 23:59
+#
+#SBATCH --qos         zen3_0512_a100x2_training
+#SBATCH --partition   zen3_0512_a100x2
+#SBATCH --gres        gpu:1
+#SBATCH --output      output.txt
+#SBATCH --error       output.txt
+
+ 
+sh ~/labs/command.sh
