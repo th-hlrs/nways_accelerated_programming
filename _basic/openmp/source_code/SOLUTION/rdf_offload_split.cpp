@@ -154,7 +154,7 @@ void pair_gpu(const double *d_x, const double *d_y, const double *d_z,
 			#pragma omp target teams distribute
 			for (int id1 = 0; id1 < numatm; id1++)
 			{
-				#pragma omp parallel for private(dx, dy, dz, r, ig2)
+				#pragma omp parallel for // no private(dx, dy, dz, r, ig2) because defined in inner scope
 				for (int id2 = 0; id2 < numatm; id2++)
 				{
 					double dx = d_x[frame * numatm + id1] - d_x[frame * numatm + id2];
