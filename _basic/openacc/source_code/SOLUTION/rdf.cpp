@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	nbin = 2000;
 	file = "../../_common/input/alk.traj.dcd";
 	///////////////////////////////////////
-	std::ifstream infilei{};
+	std::ifstream infile{};
 	infile.open(file.c_str());
 	if (!infile)
 	{
