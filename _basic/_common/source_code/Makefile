@@ -3,9 +3,9 @@
 CC := nvc++
 CFLAGS := -O3 -w -ldl
 ACCFLAGS := -Minfo=accel
-VER=$(shell nvc -dumpversion)
-NVARCH=$(shell uname -s)_$(shell uname -m)
-NVTXLIB_c := -I/opt/nvidia/hpc_sdk/$(NVARCH)/$(VER)/cuda/include
+COMPILERPATH := $(shell dirname $(shell which nvc++))
+SDKPATH := ${COMPILERPATH}/../../
+NVTXLIB_c := -I${SDKPATH}/cuda/include
 
 FC := nvfortran
 FLAGS := -O3 -w 
