@@ -38,7 +38,7 @@ Basic experience with C/C++ or Fortran is needed for the "N-Ways to GPU Programm
 
 ## Deploying the Bootcamp materials:
 
-For deploying the materials, please refer to the Deployment guide present [here](Deployment_Guide.md)
+For deploying the materials, please refer to the Deployment guide present [here](Deployment_Guide.md). In particular, if you do not setup the container as described, you need to download a file with input data manually from [google drive](https://drive.google.com/u/0/uc?export=download&confirm=jDXw&id=1WZ0rtXZ-uMLfy7htT0gaU4EQ_Rq61QTF) and save them in [_basic/_common/input](_basic/_common/input).
 
 ## Attribution
 
